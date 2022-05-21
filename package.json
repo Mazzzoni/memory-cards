@@ -1,0 +1,18 @@
+{
+  "name": "@mazz/memory-cards",
+  "private": true,
+  "version": "1.0.0",
+  "author": "François Steinel",
+  "license": "MIT",
+  "workspaces": {
+    "packages": [
+      "workspaces/*"
+    ]
+  },
+  "scripts": {
+    "start:dev:client": "yarn workspace @memory-cards/client start:dev",
+    "start:dev:server": "yarn workspace @memory-cards/server start:dev",
+    "start:prod:client": "yarn workspace @memory-cards/client start:prod",
+    "start:prod:server": "yarn workspace @memory-cards/server start:prod"
+  }
+}
