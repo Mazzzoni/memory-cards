@@ -4,7 +4,7 @@ import Header from '@components/layout/Header';
 
 const Page: NextPage = () => {
   return (
-    <div className="container mt-16">
+    <div className="container max-w-2xl mt-16">
       <Header/>
       <GameManager/>
     </div>

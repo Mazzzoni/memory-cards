@@ -1,0 +1,1 @@
+export const LOBBY_MAX_PLAYERS = 2;

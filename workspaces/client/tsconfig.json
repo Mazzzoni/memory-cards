@@ -30,6 +30,9 @@
       ],
       "@styles/*": [
         "styles/*"
+      ],
+      "@icons/*": [
+        "icons/*"
       ]
     }
   },

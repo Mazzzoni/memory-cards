@@ -1,34 +1,32 @@
 import useSocketManager from '@hooks/useSocketManager';
 import { useEffect } from 'react';
-import { ClientEvents } from '@memory-cards/shared/client/ClientEvents';
 import { Listener } from '@components/websocket/types';
-import { toast } from 'react-toastify';
 import { ServerEvents } from '@memory-cards/shared/server/ServerEvents';
+import { ServerPayloads } from '@memory-cards/shared/server/ServerPayloads';
+import { useRecoilState } from 'recoil';
+import { CurrentLobbyState } from '@components/game/states';
+import Introduction from '@components/game/Introduction';
+import Game from '@components/game/Game';
 
 export default function GameManager() {
   const {sm} = useSocketManager();
+  const [lobbyState, setLobbyState] = useRecoilState(CurrentLobbyState);
 
   useEffect(() => {
     sm.connect();
 
-    const onPong: Listener<{ message: string }> = ({message}) => toast.info(message);
+    const onLobbyState: Listener<ServerPayloads[ServerEvents.LobbyState]> = (data) => setLobbyState(data);
 
-    sm.registerListener(ServerEvents.Pong, onPong);
+    sm.registerListener(ServerEvents.LobbyState, onLobbyState);
 
     return () => {
-      sm.removeListener(ServerEvents.Pong, onPong);
+      sm.removeListener(ServerEvents.LobbyState, onLobbyState);
     };
   }, []);
 
-  const onPing = () => {
-    sm.emit({
-      event: ClientEvents.Ping,
-    });
-  };
+  if (lobbyState === null) {
+    return <Introduction/>;
+  }
 
-  return (
-    <div>
-      <button className="btn" onClick={onPing}>ping</button>
-    </div>
-  );
+  return <Game/>;
 }
