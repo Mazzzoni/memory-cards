@@ -2,6 +2,7 @@ import useSocketManager from '@hooks/useSocketManager';
 import { ClientEvents } from '@memory-cards/shared/client/ClientEvents';
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
+import { emitEvent } from '@utils/analytics';
 
 export default function Introduction() {
   const router = useRouter();
@@ -22,6 +23,8 @@ export default function Introduction() {
     sm.emit({
       event: ClientEvents.LobbyCreate,
     });
+
+    emitEvent('lobby_create');
   };
 
   return (

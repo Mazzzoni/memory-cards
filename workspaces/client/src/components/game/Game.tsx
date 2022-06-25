@@ -6,6 +6,7 @@ import Card from '@components/game/Card';
 import { Badge, LoadingOverlay, Overlay } from '@mantine/core';
 import { MantineColor } from '@mantine/styles';
 import { showNotification } from '@mantine/notifications';
+import { emitEvent } from '@utils/analytics';
 
 export default function Game() {
   const {sm} = useSocketManager();
@@ -42,6 +43,8 @@ export default function Game() {
       event: ClientEvents.GameRevealCard,
       data: {cardIndex},
     });
+
+    emitEvent('card_revealed');
   };
 
   const onReplay = () => {

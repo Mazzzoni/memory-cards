@@ -1,15 +1,28 @@
 import { AppProps } from 'next/app';
 import Head from 'next/head';
+import Script from 'next/script';
 import { MantineProvider } from '@mantine/core';
 import { RecoilRoot } from 'recoil';
 import { SocketManagerProvider } from '@components/websocket/SocketManagerProvider';
 import { NotificationsProvider } from '@mantine/notifications';
+import { pageView } from '@utils/analytics';
+import { useRouter } from 'next/router';
+import { useEffect } from 'react';
 
 import '@styles/main.css';
 import 'react-toastify/dist/ReactToastify.css';
 
 export default function _App(props: AppProps) {
   const {Component, pageProps} = props;
+  const router = useRouter();
+
+  useEffect(() => {
+    const handleRouteChange = (url: string) => pageView(url);
+
+    router.events.on('routeChangeComplete', handleRouteChange);
+
+    return () => router.events.off('routeChangeComplete', handleRouteChange);
+  }, [router.events]);
 
   return (
     <RecoilRoot>
@@ -19,6 +32,27 @@ export default function _App(props: AppProps) {
         <meta name="description" content="Memory cards game"/>
         <link rel="icon" href="/cards.svg"/>
       </Head>
+
+      <Script
+        strategy="afterInteractive"
+        src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_TRACKING_ID}`}
+      />
+
+      <Script
+        id="gtag-init"
+        strategy="afterInteractive"
+        dangerouslySetInnerHTML={{
+          __html: `
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+                      
+            gtag('config', '${process.env.NEXT_PUBLIC_GA_TRACKING_ID}', {
+              page_path: window.location.pathname,
+            });
+          `,
+        }}
+      />
 
       <MantineProvider
         withGlobalStyles
