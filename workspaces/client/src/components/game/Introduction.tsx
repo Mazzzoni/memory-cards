@@ -19,9 +19,10 @@ export default function Introduction() {
     }
   }, [router]);
 
-  const onCreateLobby = () => {
+  const onCreateLobby = (mode: 'solo' | 'duo') => {
     sm.emit({
       event: ClientEvents.LobbyCreate,
+      data: {mode: mode},
     });
 
     emitEvent('lobby_create');
@@ -32,7 +33,7 @@ export default function Introduction() {
       <h2 className="text-2xl">Hello ! 👋</h2>
 
       <p className="mt-3 text-lg">
-        Welcome to a simple game to test your memory against other players.
+        Welcome to a simple game to test your memory against other players or yourself (solo mode).
         <br/>
         Reveal cards by clicking on them, you can reveal two card per round, your opponent too.
         <br/>
@@ -41,8 +42,9 @@ export default function Introduction() {
         Game is over once all cards are revealed. Player with most points wins!
       </p>
 
-      <div className="mt-5 text-center">
-        <button className="btn" onClick={onCreateLobby}>Create lobby</button>
+      <div className="mt-5 text-center flex justify-between">
+        <button className="btn" onClick={() => onCreateLobby('solo')}>Create solo lobby</button>
+        <button className="btn" onClick={() => onCreateLobby('duo')}>Create duo lobby</button>
       </div>
     </div>
   );

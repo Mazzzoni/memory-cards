@@ -3,9 +3,10 @@ import { Server } from 'socket.io';
 import { AuthenticatedSocket } from '@app/game/types';
 import { ServerException } from '@app/game/server.exception';
 import { SocketExceptions } from '@shared/server/SocketExceptions';
-import { LOBBIES_INTERVAL_CLEAN_UP, LOBBY_MAX_LIFETIME, LOBBY_MAX_PLAYERS } from '@app/game/constants';
+import { LOBBIES_INTERVAL_CLEAN_UP, LOBBY_MAX_LIFETIME } from '@app/game/constants';
 import { ServerEvents } from '@shared/server/ServerEvents';
 import { ServerPayloads } from '@shared/server/ServerPayloads';
+import { LobbyMode } from '@app/game/lobby/types';
 
 export class LobbyManager
 {
@@ -28,9 +29,21 @@ export class LobbyManager
     client.data.lobby?.removeClient(client);
   }
 
-  public createLobby(): Lobby
+  public createLobby(mode: LobbyMode): Lobby
   {
-    const lobby = new Lobby(this.server);
+    let maxClients = 2;
+
+    switch (mode) {
+      case 'solo':
+        maxClients = 1;
+        break;
+
+      case 'duo':
+        maxClients = 2;
+        break;
+    }
+
+    const lobby = new Lobby(this.server, maxClients);
 
     this.lobbies.set(lobby.id, lobby);
 
@@ -45,7 +58,7 @@ export class LobbyManager
       throw new ServerException(SocketExceptions.LobbyError, 'Lobby not found');
     }
 
-    if (lobby.clients.size >= LOBBY_MAX_PLAYERS) {
+    if (lobby.clients.size >= lobby.maxClients) {
       throw new ServerException(SocketExceptions.LobbyError, 'Lobby already full');
     }
 

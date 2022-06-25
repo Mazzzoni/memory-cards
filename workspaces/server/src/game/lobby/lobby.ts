@@ -4,7 +4,6 @@ import { ServerEvents } from '@shared/server/ServerEvents';
 import { AuthenticatedSocket } from '@app/game/types';
 import { Instance } from '@app/game/instance/instance';
 import { ServerPayloads } from '@shared/server/ServerPayloads';
-import { LOBBY_MAX_PLAYERS } from '@app/game/constants';
 
 export class Lobby
 {
@@ -18,6 +17,7 @@ export class Lobby
 
   constructor(
     private readonly server: Server,
+    public readonly maxClients: number,
   )
   {
   }
@@ -28,7 +28,7 @@ export class Lobby
     client.join(this.id);
     client.data.lobby = this;
 
-    if (this.clients.size >= LOBBY_MAX_PLAYERS) {
+    if (this.clients.size >= this.maxClients) {
       this.instance.triggerStart();
     }
 

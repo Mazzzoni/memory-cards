@@ -15,7 +15,7 @@ import { AuthenticatedSocket } from '@app/game/types';
 import { ServerException } from '@app/game/server.exception';
 import { SocketExceptions } from '@shared/server/SocketExceptions';
 import { ServerPayloads } from '@shared/server/ServerPayloads';
-import { LobbyJoinDto, RevealCardDto } from '@app/game/dtos';
+import { LobbyCreateDto, LobbyJoinDto, RevealCardDto } from '@app/game/dtos';
 import { WsValidationPipe } from '@app/websocket/ws.validation-pipe';
 
 @UsePipes(new WsValidationPipe())
@@ -59,9 +59,9 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   }
 
   @SubscribeMessage(ClientEvents.LobbyCreate)
-  onLobbyCreate(client: AuthenticatedSocket): WsResponse<ServerPayloads[ServerEvents.GameMessage]>
+  onLobbyCreate(client: AuthenticatedSocket, data: LobbyCreateDto): WsResponse<ServerPayloads[ServerEvents.GameMessage]>
   {
-    const lobby = this.lobbyManager.createLobby();
+    const lobby = this.lobbyManager.createLobby(data.mode);
     lobby.addClient(client);
 
     return {
