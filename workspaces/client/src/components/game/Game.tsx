@@ -50,7 +50,10 @@ export default function Game() {
   const onReplay = () => {
     sm.emit({
       event: ClientEvents.LobbyCreate,
+      data: {mode: currentLobbyState.mode},
     });
+
+    emitEvent('lobby_create');
   };
 
   const copyLobbyLink = async () => {
@@ -73,7 +76,8 @@ export default function Game() {
             : (<span>Round {currentLobbyState.currentRound}</span>)
           }
         </Badge>
-        <Badge size="xl" color="red">Opponent score: {opponentScore}</Badge>
+
+        {currentLobbyState.mode === 'duo' && <Badge size="xl" color="red">Opponent score: {opponentScore}</Badge>}
       </div>
 
       {currentLobbyState.isSuspended && (
