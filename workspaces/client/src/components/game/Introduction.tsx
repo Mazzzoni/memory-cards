@@ -33,7 +33,7 @@ export default function Introduction() {
         <br/>
         Reveal cards by clicking on them, you can reveal two card per round, your opponent too.
         <br/>
-        Once you revealed cards, if they match then you gain a point. You'll also see the cards revealed by your opponent.
+        Once you revealed cards, if they match then you gain a point. You&apos;ll also see the cards revealed by your opponent.
         <br/>
         Game is over once all cards are revealed. Player with most points wins!
       </p>
