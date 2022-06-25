@@ -11,6 +11,7 @@
     "@mantine/core": "^4.2.5",
     "@mantine/hooks": "^4.2.5",
     "@mantine/next": "^4.2.5",
+    "@mantine/notifications": "^4.2.10",
     "@memory-cards/shared": "*",
     "next": "12.1.6",
     "next-transpile-modules": "^9.0.0",

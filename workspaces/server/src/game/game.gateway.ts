@@ -1,19 +1,27 @@
-import { OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
+import {
+  OnGatewayConnection,
+  OnGatewayDisconnect,
+  OnGatewayInit,
+  WsResponse,
+  SubscribeMessage,
+  WebSocketGateway,
+} from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { ClientEvents } from '@shared/client/ClientEvents';
 import { ServerEvents } from '@shared/server/ServerEvents';
 import { LobbyManager } from '@app/game/lobby/lobby.manager';
-import { Logger } from '@nestjs/common';
+import { Logger, UsePipes } from '@nestjs/common';
 import { AuthenticatedSocket } from '@app/game/types';
 import { ServerException } from '@app/game/server.exception';
 import { SocketExceptions } from '@shared/server/SocketExceptions';
+import { ServerPayloads } from '@shared/server/ServerPayloads';
+import { LobbyJoinDto, RevealCardDto } from '@app/game/dtos';
+import { WsValidationPipe } from '@app/websocket/ws.validation-pipe';
 
+@UsePipes(new WsValidationPipe())
 @WebSocketGateway()
 export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
-  @WebSocketServer()
-  private readonly server: Server;
-
   private readonly logger: Logger = new Logger(GameGateway.name);
 
   constructor(
@@ -25,7 +33,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   afterInit(server: Server): any
   {
     // Pass server instance to managers
-    this.lobbyManager.server = this.server;
+    this.lobbyManager.server = server;
 
     this.logger.log('Game server initialized !');
   }
@@ -33,7 +41,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   async handleConnection(client: Socket, ...args: any[]): Promise<void>
   {
     // Call initializers to set up socket
-    this.lobbyManager.initializeSocket(client);
+    this.lobbyManager.initializeSocket(client as AuthenticatedSocket);
   }
 
   async handleDisconnect(client: AuthenticatedSocket): Promise<void>
@@ -51,19 +59,39 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   }
 
   @SubscribeMessage(ClientEvents.LobbyCreate)
-  onLobbyCreate(client: AuthenticatedSocket): void
+  onLobbyCreate(client: AuthenticatedSocket): WsResponse<ServerPayloads[ServerEvents.GameMessage]>
   {
     const lobby = this.lobbyManager.createLobby();
     lobby.addClient(client);
+
+    return {
+      event: ServerEvents.GameMessage,
+      data: {
+        color: 'green',
+        message: 'Lobby created',
+      },
+    };
   }
 
   @SubscribeMessage(ClientEvents.LobbyJoin)
-  onLobbyJoin(client: AuthenticatedSocket, data: { lobbyId: string }): void
+  onLobbyJoin(client: AuthenticatedSocket, data: LobbyJoinDto): void
   {
-    if (!data.lobbyId) {
-      throw new ServerException(SocketExceptions.UnexpectedPayload);
+    this.lobbyManager.joinLobby(data.lobbyId, client);
+  }
+
+  @SubscribeMessage(ClientEvents.LobbyLeave)
+  onLobbyLeave(client: AuthenticatedSocket): void
+  {
+    client.data.lobby?.removeClient(client);
+  }
+
+  @SubscribeMessage(ClientEvents.GameRevealCard)
+  onRevealCard(client: AuthenticatedSocket, data: RevealCardDto): void
+  {
+    if (!client.data.lobby) {
+      throw new ServerException(SocketExceptions.LobbyError, 'You are not in a lobby');
     }
 
-    this.lobbyManager.joinLobby(data.lobbyId, client);
+    client.data.lobby.instance.revealCard(data.cardIndex, client);
   }
 }

@@ -1,14 +1,18 @@
 import { v4 } from 'uuid';
 import { Server, Socket } from 'socket.io';
 import { ServerEvents } from '@shared/server/ServerEvents';
-import { ServerPayloads } from '@shared/server/ServerPayloads';
 import { AuthenticatedSocket } from '@app/game/types';
+import { Instance } from '@app/game/instance/instance';
+import { ServerPayloads } from '@shared/server/ServerPayloads';
+import { LOBBY_MAX_PLAYERS } from '@app/game/constants';
 
 export class Lobby
 {
   public readonly id: string = v4();
 
-  public readonly players: Map<Socket['id'], Socket> = new Map<Socket['id'], Socket>();
+  public readonly clients: Map<Socket['id'], AuthenticatedSocket> = new Map<Socket['id'], AuthenticatedSocket>();
+
+  public readonly instance: Instance = new Instance(this);
 
   constructor(
     private readonly server: Server,
@@ -18,32 +22,53 @@ export class Lobby
 
   public addClient(client: AuthenticatedSocket): void
   {
-    this.players.set(client.id, client);
+    this.clients.set(client.id, client);
     client.join(this.id);
     client.data.lobby = this;
+
+    if (this.clients.size >= LOBBY_MAX_PLAYERS) {
+      this.instance.triggerStart();
+    }
 
     this.dispatchLobbyState();
   }
 
   public removeClient(client: AuthenticatedSocket): void
   {
-    this.players.delete(client.id);
+    this.clients.delete(client.id);
     client.leave(this.id);
     client.data.lobby = null;
+
+    // If player leave then the game isn't worth to play anymore
+    this.instance.triggerFinish();
+
+    // Alert the remaining player that client left lobby
+    this.dispatchToLobby<ServerPayloads[ServerEvents.GameMessage]>(ServerEvents.GameMessage, {
+      color: 'blue',
+      message: 'Opponent left lobby',
+    });
 
     this.dispatchLobbyState();
   }
 
   public dispatchLobbyState(): void
   {
-    const state: ServerPayloads[ServerEvents.LobbyState] = {
+    const payload: ServerPayloads[ServerEvents.LobbyState] = {
       lobbyId: this.id,
-      playersCount: this.players.size,
+      hasStarted: this.instance.hasStarted,
+      hasFinished: this.instance.hasFinished,
+      currentRound: this.instance.currentRound,
+      playersCount: this.clients.size,
+      cards: this.instance.cards.map(card => card.toDefinition()),
+      isSuspended: this.instance.isSuspended,
+      scores: this.instance.scores,
     };
 
-    this
-      .server
-      .to(this.id)
-      .emit(ServerEvents.LobbyState, state);
+    this.dispatchToLobby(ServerEvents.LobbyState, payload);
+  }
+
+  public dispatchToLobby<T>(event: ServerEvents, payload: T): void
+  {
+    this.server.to(this.id).emit(event, payload);
   }
 }

@@ -3,5 +3,5 @@
 @tailwind utilities;
 
 .btn {
-  @apply bg-orange-600 text-white px-3 py-2 font-bold;
+  @apply bg-emerald-800 text-white px-3 py-2 font-bold;
 }

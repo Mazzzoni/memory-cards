@@ -6,4 +6,8 @@ export enum ClientEvents
   // Lobby
   LobbyCreate = 'client.lobby.create',
   LobbyJoin = 'client.lobby.join',
+  LobbyLeave = 'client.lobby.leave',
+
+  // Game
+  GameRevealCard = 'client.game.reveal_card',
 }

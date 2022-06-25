@@ -1,24 +1,26 @@
 import useSocketManager from '@hooks/useSocketManager';
 import { ClientEvents } from '@memory-cards/shared/client/ClientEvents';
-import { useState } from 'react';
-import { Divider } from '@mantine/core';
+import { useEffect } from 'react';
+import { useRouter } from 'next/router';
 
 export default function Introduction() {
+  const router = useRouter();
   const {sm} = useSocketManager();
-  const [lobbyTargetId, setLobbyTargetId] = useState('');
+
+  useEffect(() => {
+    if (router.query.lobby) {
+      sm.emit({
+        event: ClientEvents.LobbyJoin,
+        data: {
+          lobbyId: router.query.lobby,
+        },
+      });
+    }
+  }, [router]);
 
   const onCreateLobby = () => {
     sm.emit({
       event: ClientEvents.LobbyCreate,
-    });
-  };
-
-  const onJoinLobby = () => {
-    sm.emit({
-      event: ClientEvents.LobbyJoin,
-      data: {
-        lobbyId: lobbyTargetId,
-      },
     });
   };
 
@@ -36,30 +38,8 @@ export default function Introduction() {
         Game is over once all cards are revealed. Player with most points wins!
       </p>
 
-      <Divider
-        variant="dashed"
-        label="You can create a lobby or join one"
-        labelPosition="center"
-        labelProps={{
-          size: 'lg',
-        }}
-        size="sm"
-        my={20}
-      />
-
-      <div className="mt-3 flex justify-between">
+      <div className="mt-5 text-center">
         <button className="btn" onClick={onCreateLobby}>Create lobby</button>
-
-        <div>
-          <input
-            type="text"
-            className="px-3 py-2 text-black ml-6 w-72"
-            placeholder="Lobby ID"
-            onChange={(e) => setLobbyTargetId(e.target.value)}
-          />
-
-          <button className="btn" onClick={onJoinLobby}>Join lobby</button>
-        </div>
       </div>
     </div>
   );

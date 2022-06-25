@@ -5,7 +5,7 @@ import { ServerEvents } from '@memory-cards/shared/server/ServerEvents';
 import { ServerExceptionResponse } from '@memory-cards/shared/server/types';
 import { SetterOrUpdater } from 'recoil';
 import { io, Socket } from 'socket.io-client';
-import { toast } from 'react-toastify';
+import { showNotification } from '@mantine/notifications';
 
 type EmitOptions<T> = {
   event: ClientEvents;
@@ -78,7 +78,11 @@ export default class SocketManager
   {
     this.socket.on('connect', () => {
       if (this.connectionLost) {
-        toast.success('Reconnected to server!');
+        showNotification({
+          message: 'Reconnected to server!',
+          color: 'green',
+          autoClose: 2000,
+        });
         this.connectionLost = false;
       }
     });
@@ -88,15 +92,27 @@ export default class SocketManager
   {
     this.socket.on('disconnect', async (reason: Socket.DisconnectReason) => {
       if (reason === 'io client disconnect') {
-        toast.success('Disconnected successfully!');
+        showNotification({
+          message: 'Disconnected successfully!',
+          color: 'green',
+          autoClose: 2000,
+        });
       }
 
       if (reason === 'io server disconnect') {
-        toast.warn('You got disconnect by server');
+        showNotification({
+          message: 'You got disconnect by server',
+          color: 'orange',
+          autoClose: 3000,
+        });
       }
 
       if (reason === 'ping timeout' || reason === 'transport close' || reason === 'transport error') {
-        toast.warn('Connection lost to the server');
+        showNotification({
+          message: 'Connection lost to the server',
+          color: 'orange',
+          autoClose: 3000,
+        });
         this.connectionLost = true;
       }
 
@@ -110,7 +126,11 @@ export default class SocketManager
   {
     this.socket.on('exception', (data: ServerExceptionResponse) => {
       if (typeof data.exception === 'undefined') {
-        toast.error('Unexpected error from server');
+        showNotification({
+          message: 'Unexpected error from server',
+          color: 'red',
+        });
+
         return;
       }
 
@@ -124,7 +144,10 @@ export default class SocketManager
         }
       }
 
-      toast.error(body);
+      showNotification({
+        message: body,
+        color: 'red',
+      });
     });
   }
 }

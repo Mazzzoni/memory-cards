@@ -1,7 +1,7 @@
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
 import { NestExpressApplication } from '@nestjs/platform-express';
-import { GameIoAdapter } from './websocket/game-io.adapter';
+import { GameIoAdapter } from '@app/websocket/game-io.adapter';
+import { AppModule } from '@app/app.module';
 
 async function bootstrap()
 {
@@ -10,7 +10,7 @@ async function bootstrap()
   app.useWebSocketAdapter(new GameIoAdapter(app));
 
   app.enableCors({
-    origin: true,
+    origin: process.env.CORS_ALLOW_ORIGIN,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true,
   });
