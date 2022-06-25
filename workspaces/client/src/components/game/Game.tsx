@@ -86,7 +86,7 @@ export default function Game() {
         </div>
       )}
 
-      <div className="grid grid-cols-7 gap-4 relative">
+      <div className="grid grid-cols-7 gap-4 relative select-none">
         {currentLobbyState.hasFinished && <Overlay opacity={0.6} color="#000" blur={2} zIndex={5}/>}
         <LoadingOverlay visible={!currentLobbyState.hasStarted || currentLobbyState.isSuspended}/>
 
