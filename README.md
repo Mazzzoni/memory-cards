@@ -6,6 +6,9 @@ Main goal of the project is to show how to build a simple lobby based online mul
 You can find released game here:  
 [https://memory-cards.mazz.lol/](https://memory-cards.mazz.lol/)
 
+Here's a complete article about process and implementation:
+[https://francois-steinel.fr/articles/build-lobby-based-online-multiplayer-browser-games-with-react-and-nodejs](https://francois-steinel.fr/articles/build-lobby-based-online-multiplayer-browser-games-with-react-and-nodejs)
+
 ## Installation
 
 To install project locally, make sure to have NodeJS (version 16.13.0 at least) and Yarn (version 1.22.17 at least) installed.
