@@ -13,7 +13,8 @@ To install project locally, make sure to have NodeJS (version 16.13.0 at least) 
 * Clone the project `git@github.com:Mazzzoni/memory-cards.git`
 * Enter project `cd memory-cards/`
 * Install dependencies `yarn`
-* Start dev environment `yarn start:dev`
+* Start dev environment for client `yarn start:dev:client`
+* Start dev environment for server `yarn start:dev:server`
 
 ## Stack
 
