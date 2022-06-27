@@ -6,7 +6,7 @@ Main goal of the project is to show how to build a simple lobby based online mul
 You can find released game here:  
 [https://memory-cards.mazz.lol/](https://memory-cards.mazz.lol/)
 
-Here's a complete article about process and implementation:
+Here's a complete article about process and implementation:  
 [https://francois-steinel.fr/articles/build-lobby-based-online-multiplayer-browser-games-with-react-and-nodejs](https://francois-steinel.fr/articles/build-lobby-based-online-multiplayer-browser-games-with-react-and-nodejs)
 
 ## Installation
