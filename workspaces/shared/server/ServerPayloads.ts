@@ -5,6 +5,7 @@ export type ServerPayloads = {
   [ServerEvents.LobbyState]: {
     lobbyId: string;
     mode: 'solo' | 'duo';
+    delayBetweenRounds: number;
     hasStarted: boolean;
     hasFinished: boolean;
     currentRound: number;

@@ -50,7 +50,10 @@ export default function Game() {
   const onReplay = () => {
     sm.emit({
       event: ClientEvents.LobbyCreate,
-      data: {mode: currentLobbyState.mode},
+      data: {
+        mode: currentLobbyState.mode,
+        delayBetweenRounds: currentLobbyState.delayBetweenRounds,
+      },
     });
 
     emitEvent('lobby_create');

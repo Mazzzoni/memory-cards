@@ -23,6 +23,8 @@ export class Instance
 
   public scores: Record<Socket['id'], number> = {};
 
+  public delayBetweenRounds: number = 2;
+
   private cardsRevealedForCurrentRound: Record<number, Socket['id']> = {};
 
   constructor(
@@ -175,7 +177,7 @@ export class Instance
       }
 
       this.lobby.dispatchLobbyState();
-    }, SECOND * 3);
+    }, SECOND * this.delayBetweenRounds);
   }
 
   private initializeCards(): void

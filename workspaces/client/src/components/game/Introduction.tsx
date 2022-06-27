@@ -1,12 +1,14 @@
 import useSocketManager from '@hooks/useSocketManager';
 import { ClientEvents } from '@memory-cards/shared/client/ClientEvents';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { emitEvent } from '@utils/analytics';
+import { Divider, Select } from '@mantine/core';
 
 export default function Introduction() {
   const router = useRouter();
   const {sm} = useSocketManager();
+  const [delayBetweenRounds, setDelayBetweenRounds] = useState<number>(2);
 
   useEffect(() => {
     if (router.query.lobby) {
@@ -22,7 +24,10 @@ export default function Introduction() {
   const onCreateLobby = (mode: 'solo' | 'duo') => {
     sm.emit({
       event: ClientEvents.LobbyCreate,
-      data: {mode: mode},
+      data: {
+        mode: mode,
+        delayBetweenRounds: delayBetweenRounds,
+      },
     });
 
     emitEvent('lobby_create');
@@ -41,6 +46,25 @@ export default function Introduction() {
         <br/>
         Game is over once all cards are revealed. Player with most points wins!
       </p>
+
+      <Divider my="md"/>
+
+      <div>
+        <h3 className="text-xl">Game options</h3>
+
+        <Select
+          label="Delay between rounds"
+          defaultValue="2"
+          onChange={(delay) => setDelayBetweenRounds(+delay!)}
+          data={[
+            {value: '1', label: '1 second'},
+            {value: '2', label: '2 seconds'},
+            {value: '3', label: '3 seconds'},
+            {value: '4', label: '4 seconds'},
+            {value: '5', label: '5 seconds'},
+          ]}
+        />
+      </div>
 
       <div className="mt-5 text-center flex justify-between">
         <button className="btn" onClick={() => onCreateLobby('solo')}>Create solo lobby</button>
