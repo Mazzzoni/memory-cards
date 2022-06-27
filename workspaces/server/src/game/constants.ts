@@ -5,4 +5,3 @@ export const HOUR = MINUTE * 60;
 
 // Lobby
 export const LOBBY_MAX_LIFETIME = HOUR;
-export const LOBBIES_INTERVAL_CLEAN_UP = MINUTE * 2;
