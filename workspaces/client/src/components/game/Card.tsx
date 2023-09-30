@@ -28,6 +28,7 @@ export default function Card({card, cardIndex, onRevealCard, clientId}: Props) {
           ${card.card === null ? 'cursor-pointer' : ''}
           ${cardIndex % 2 === 0 ? 'hover:rotate-[-8deg]' : 'hover:rotate-[8deg]'}
         `}
+        draggable="false"
         onClick={() => card.card === null && onRevealCard(cardIndex)}
       />
     </div>
