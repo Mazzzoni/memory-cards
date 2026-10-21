@@ -2,7 +2,7 @@ import useSocketManager from '@hooks/useSocketManager';
 import { ClientEvents } from '@memory-cards/shared/client/ClientEvents';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
-import { emitEvent } from '@utils/analytics';
+import { trackEvent } from '@utils/analytics';
 import { Divider, Select } from '@mantine/core';
 
 export default function Introduction() {
@@ -30,7 +30,7 @@ export default function Introduction() {
       },
     });
 
-    emitEvent('lobby_create');
+    trackEvent('lobby_create');
   };
 
   return (

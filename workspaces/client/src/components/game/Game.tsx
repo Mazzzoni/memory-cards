@@ -6,7 +6,7 @@ import Card from '@components/game/Card';
 import { Badge, LoadingOverlay, Overlay } from '@mantine/core';
 import { MantineColor } from '@mantine/styles';
 import { showNotification } from '@mantine/notifications';
-import { emitEvent } from '@utils/analytics';
+import { trackEvent } from '@utils/analytics';
 
 export default function Game() {
   const {sm} = useSocketManager();
@@ -44,7 +44,7 @@ export default function Game() {
       data: {cardIndex},
     });
 
-    emitEvent('card_revealed');
+    trackEvent('card_revealed');
   };
 
   const onReplay = () => {
@@ -56,7 +56,7 @@ export default function Game() {
       },
     });
 
-    emitEvent('lobby_create');
+    trackEvent('lobby_create');
   };
 
   const copyLobbyLink = async () => {
