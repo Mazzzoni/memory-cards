@@ -6,7 +6,7 @@ services:
       context: .
       dockerfile: ./docker/server/Dockerfile
     ports:
-      - "3875:3000"
+      - "127.0.0.1:3875:3000"
     volumes:
       - "./workspaces/server/var:/home/workspaces/server/var"
     restart: unless-stopped
@@ -16,5 +16,5 @@ services:
       context: .
       dockerfile: ./docker/client/Dockerfile
     ports:
-      - "3876:3000"
+      - "127.0.0.1:3876:3000"
     restart: unless-stopped
