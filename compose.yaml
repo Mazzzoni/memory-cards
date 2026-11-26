@@ -1,0 +1,19 @@
+# Base file, safe anywhere (ports on 127.0.0.1). The server adds compose.prod.yaml through its .env
+# (COMPOSE_FILE, see .env.prod.dist). Caddy proxies memory-cards.mazz.lol/wsapi* to the server, the rest to the
+# client.
+services:
+  server:
+    build:
+      context: .
+      dockerfile: ./docker/server/Dockerfile
+    ports:
+      - "127.0.0.1:${API_PORT:-3875}:3000"
+    volumes:
+      - "./workspaces/server/var:/home/workspaces/server/var"
+
+  client:
+    build:
+      context: .
+      dockerfile: ./docker/client/Dockerfile
+    ports:
+      - "127.0.0.1:${HTTP_PORT:-3876}:3000"

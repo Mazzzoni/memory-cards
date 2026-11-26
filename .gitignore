@@ -1,2 +1,6 @@
 /node_modules
 /.idea
+
+# Server files: the compose .env; compose.override.yaml is for local tweaks only
+/.env
+/compose.override.yaml

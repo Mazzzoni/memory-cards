@@ -1,0 +1,13 @@
+# Production overrides, loaded through the server's .env: COMPOSE_FILE=compose.yaml:compose.prod.yaml.
+x-logging: &logging
+  driver: json-file
+  options: { max-size: "10m", max-file: "3" }
+
+services:
+  server:
+    restart: unless-stopped
+    logging: *logging
+
+  client:
+    restart: unless-stopped
+    logging: *logging

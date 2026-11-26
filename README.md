@@ -41,6 +41,51 @@ To handle realtime, project uses websockets and manage socket connections with S
 
 For deployment, I use docker containers (using Alpine NodeJS images for client and server).
 
+## Operations
+
+The server standard and the host config (Caddy site, firewall) are in
+[Mazzzoni/mazz-infra](https://github.com/Mazzzoni/mazz-infra); this project's row is in its `inventory.toml`.
+
+### Environments
+
+| Env | Server (ssh alias) | Domain | Checkout | Branch | Compose project |
+| --- | --- | --- | --- | --- | --- |
+| production | `mazzvps` | memory-cards.mazz.lol | `~/projects/memory-cards.mazz.lol` | `main` | `memory-cardsmazzlol` |
+
+Two containers: `client` (Next.js, `127.0.0.1:3876`) and `server` (NestJS + Socket.IO, `127.0.0.1:3875`, behind
+`/wsapi*`). `compose.yaml` is the base; the server's `.env` adds `compose.prod.yaml` (restart policy, log
+rotation) through `COMPOSE_FILE` and pins `COMPOSE_PROJECT_NAME`.
+
+### Deploy
+
+By hand on the server, after a push to `main`:
+
+```bash
+cd ~/projects/memory-cards.mazz.lol && git pull --ff-only && docker compose up -d --build --wait
+```
+
+### Rollback
+
+Revert the commit on `main`, push, deploy as above.
+
+### Server files
+
+| Path | What | Template |
+| --- | --- | --- |
+| `.env` | compose: `COMPOSE_FILE`, project name, ports (no secret) | `.env.prod.dist` |
+| `workspaces/client/.env.local` | the client's production values, inlined at build time | `workspaces/client/.env.local.prod.dist` |
+| `workspaces/server/.env.local` | the server's allowed origin | `workspaces/server/.env.local.prod.dist` |
+
+All in Bitwarden (Mazz/Servers) through `~/projects/server-secrets`.
+
+### Backup and restore
+
+Nothing to back up: no database. `workspaces/server/var` is mounted into the server and empty today.
+
+### Logs and jobs
+
+No cron, no worker. Logs: `docker compose logs -f server`.
+
 ## Credits
 
 Created by [Mazzoni](https://github.com/Mazzzoni). (email: [hello@mazz.lol](mailto:hello@mazz.lol) / discord: [@mazz#0385](https://discordapp.com/users/370123066594033668))

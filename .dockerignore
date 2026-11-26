@@ -12,6 +12,8 @@
 **/docker-compose.*.yml
 **/docker-compose.yaml
 **/docker-compose.yml
+**/compose*.yaml
+**/*.prod.dist
 **/Dockerfile
 **/Thumbs.db
 .editorconfig
